@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة حنين خداج</title>
+    <style>
+        body {
+            background: linear-gradient(180deg, #4facfe 0%, #00f2fe 50%, #a8edea 100%);
+            font-family: 'Comic Sans MS', 'Segoe UI', Tahoma, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+        .game-box {
+            background: #fffdf7;
+            width: 100%;
+            max-width: 370px;
+            padding: 25px 20px;
+            border-radius: 30px;
+            border: 5px solid #ffd166;
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            position: relative;
+        }
+        .decorations {
+            font-size: 32px;
+            margin-bottom: 5px;
+            letter-spacing: 5px;
+        }
+        h2 {
+            color: #ff595e;
+            font-size: 25px;
+            margin: 10px 0;
+            text-shadow: 1px 1px 0px #ffe66d;
+            line-height: 1.5;
+        }
+        .subtitle {
+            color: #1982c4;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        input {
+            width: 75%;
+            padding: 14px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #6a4c93;
+            background-color: #fff3b0;
+            border: 3px dashed #ff9f1c;
+            border-radius: 18px;
+            text-align: center;
+            margin: 10px 0;
+            outline: none;
+        }
+        button {
+            width: 85%;
+            background: linear-gradient(to bottom, #ffca3a, #ff9f1c);
+            color: #ffffff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            border: none;
+            border-bottom: 5px solid #e07a00;
+            padding: 14px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+        button:active {
+            transform: translateY(3px);
+            border-bottom: 2px solid #e07a00;
+        }
+        .start-btn {
+            background: linear-gradient(to bottom, #ff595e, #d90429);
+            border-bottom: 5px solid #9b0000;
+            margin-top: 20px;
+        }
+        #restartBtn {
+            background: linear-gradient(to bottom, #8ac926, #55a630);
+            border-bottom: 5px solid #386641;
+        }
+        #playScreen {
+            display: none; /* إخفاء شاشة اللعب في البداية */
+        }
+        #hint {
+            margin-top: 18px;
+            font-size: 18px;
+            font-weight: bold;
+            min-height: 28px;
+            padding: 8px;
+            border-radius: 12px;
+        }
+        .stats {
+            display: inline-block;
+            background-color: #e0fbfc;
+            color: #1982c4;
+            padding: 8px 18px;
+            border-radius: 15px;
+            margin-top: 12px;
+            font-size: 15px;
+            font-weight: bold;
+        }
+        .footer-name {
+            margin-top: 18px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #6a4c93;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-box">
+        <div class="decorations">🎈🧸🌟🚀</div>
+
+        <!-- شاشة الترحيب الأولى -->
+        <div id="welcomeScreen">
+            <h2>أهلاً وسهلاً بكم في لعبة<br>حنين خداج 🎉</h2>
+            <p class="subtitle">هل أنتم مستعدون لتحدي الأرقام السرية؟</p>
+            <button class="start-btn" onclick="startGame()">ابدأ اللعب! 🎮</button>
+        </div>
+
+        <!-- شاشة اللعبة الرئيسية -->
+        <div id="playScreen">
+            <h2>مغامرة الرقم السري</h2>
+            <p class="subtitle">خبّأتُ رقماً سرياً بين 1 و 100.. هل تستطيع إيجاده؟ 🤔</p>
+
+            <input type="number" id="guessInput" placeholder="؟">
+            <br>
+            <button id="checkBtn" onclick="checkGuess()">جرّب حظك! ✨</button>
+            <button id="restartBtn" onclick="restartGame()" style="display:none;">العب مرة ثانية! 🔄</button>
+
+            <div id="hint"></div>
+            <div class="stats">المحاولات: <span id="attempts">0</span> ⭐</div>
+        </div>
+        
+        <div class="footer-name">تصميم وبرمجة: حنين خداج (Haneen) 💖</div>
+    </div>
+
+    <script>
+        let secretNumber = Math.floor(Math.random() * 100) + 1;
+        let attemptsCount = 0;
+
+        // دالة الانتقال من شاشة الترحيب إلى شاشة اللعبة
+        function startGame() {
+            document.getElementById("welcomeScreen").style.display = "none";
+            document.getElementById("playScreen").style.display = "block";
+        }
+
+        function checkGuess() {
+            let userGuess = Number(document.getElementById("guessInput").value);
+            let hintText = document.getElementById("hint");
+
+            if (!userGuess || userGuess < 1 || userGuess > 100) {
+                hintText.style.backgroundColor = "#ffe5ec";
+                hintText.style.color = "#d90429";
+                hintText.innerText = "🙈 اكتب رقماً بين 1 و 100 يا بطل!";
+                return;
+            }
+
+            attemptsCount++;
+            document.getElementById("attempts").innerText = attemptsCount;
+
+            if (userGuess === secretNumber) {
+                hintText.style.backgroundColor = "#d8f3dc";
+                hintText.style.color = "#2d6a4f";
+                hintText.innerText = "🎊 برافو! الرقم هو " + secretNumber + " (في " + attemptsCount + " محاولات) 🏆";
+                document.getElementById("checkBtn").style.display = "none";
+                document.getElementById("restartBtn").style.display = "inline-block";
+            } else if (userGuess < secretNumber) {
+                hintText.style.backgroundColor = "#fff3b0";
+                hintText.style.color = "#e36414";
+                hintText.innerText = "🚀 اصعد للأعلى! الرقم أكبر من " + userGuess;
+            } else {
+                hintText.style.backgroundColor = "#caf0f8";
+                hintText.style.color = "#0077b6";
+                hintText.innerText = "🪂 انزل للأسفل! الرقم أصغر من " + userGuess;
+            }
+
+            document.getElementById("guessInput").value = "";
+        }
+
+        function restartGame() {
+            secretNumber = Math.floor(Math.random() * 100) + 1;
+            attemptsCount = 0;
+            document.getElementById("attempts").innerText = "0";
+            document.getElementById("hint").innerText = "";
+            document.getElementById("hint").style.backgroundColor = "transparent";
+            document.getElementById("checkBtn").style.display = "inline-block";
+            document.getElementById("restartBtn").style.display = "none";
+        }
+    </script>
+
+</body>
+</html>
